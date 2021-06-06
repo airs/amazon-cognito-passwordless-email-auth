@@ -30,7 +30,7 @@ export class SignUpComponent {
     this.errorMessage_.next('');
     this.busy_.next(true);
     try {
-      await this.auth.signUp(this.email.value, this.fullName.value);
+      await this.auth.signUp(this.email.value, this.email.value);
       await this.auth.signIn(this.email.value);
       this.router.navigate(['/enter-secret-code']);
     } catch (err) {
