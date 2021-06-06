@@ -73,4 +73,11 @@ export class AuthService {
     return await Auth.userAttributes(this.cognitoUser);
   }
 
+  public async getUserGroups() {
+    if (!this.cognitoUser) {
+      this.cognitoUser = await Auth.currentAuthenticatedUser();
+    }
+    return await this.cognitoUser.getSignInUserSession().getAccessToken().payload["cognito:groups"];
+  }
+
 }

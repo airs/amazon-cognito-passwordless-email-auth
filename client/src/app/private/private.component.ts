@@ -40,6 +40,11 @@ export class PrivateComponent implements OnInit {
         this.userDetailsForm.addControl(detail.getName(), control);
       });
       this.userDetails_.next(userDetails);
+
+      const userGroups = await this.auth.getUserGroups();
+      userGroups.forEach(group => {
+        console.log(group);
+      });
     } catch (err) {
       this.errorMessage_.next(err.message || err);
     } finally {
