@@ -89,8 +89,7 @@ export class PrivateComponent implements OnInit {
          * If `redirectToCheckout` fails due to a browser or network
          * error, display the localized error message to your customer.
          */
-        var displayError = document.getElementById('error-message');
-        displayError.textContent = result.error.message;
+        this.errorMessage_.next(result.error.message);
       }
     });
 
