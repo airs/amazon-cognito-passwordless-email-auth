@@ -78,10 +78,19 @@ export class PrivateComponent implements OnInit {
        */
       successUrl: baseURL + '/thanks',
       cancelUrl: baseURL + '/private',
+
       /*
        * Add a parameter to attach string the Cognito and Stripe. 
        */
-      clientReferenceId: this.userSub
+      clientReferenceId: this.userSub,
+
+      /*
+       * Add the following if the address is required.
+       */
+      billingAddressCollection: 'required',
+      shippingAddressCollection: {
+        allowedCountries: ['JP'],
+      }
     })
     .then(function (result) {
       if (result.error) {
