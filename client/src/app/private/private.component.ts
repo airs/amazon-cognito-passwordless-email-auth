@@ -5,6 +5,8 @@ import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { AuthService } from '../auth.service';
 import { BehaviorSubject } from 'rxjs';
 import { FormGroup, FormControl } from '@angular/forms';
+import {loadStripe} from '@stripe/stripe-js';
+
 
 @Component({
   selector: 'app-private',
@@ -24,6 +26,8 @@ export class PrivateComponent implements OnInit {
   private errorMessage_ = new BehaviorSubject('');
   public errorMessage = this.errorMessage_.asObservable();
 
+  private userSub = null;
+
   constructor(private auth: AuthService) { }
 
   ngOnInit() {
@@ -38,6 +42,10 @@ export class PrivateComponent implements OnInit {
       userDetails.forEach(detail => {
         const control = new FormControl(detail.getValue());
         this.userDetailsForm.addControl(detail.getName(), control);
+
+        if (detail.getName() === 'sub') {
+          this.userSub = detail.getValue();
+        }
       });
       this.userDetails_.next(userDetails);
 
@@ -50,5 +58,41 @@ export class PrivateComponent implements OnInit {
     } finally {
       this.busy_.next(false);
     }
+  }
+
+  public async checkout() {
+    const baseURL = 'http://localhost:4200';
+    const apiKey = 'YOUR_API_KEY - https://dashboard.stripe.com/test/apikeys';
+    const priceId = 'YOUR_PRICE_ID - https://dashboard.stripe.com/test/products';
+
+    const stripe = await loadStripe(apiKey);
+    stripe.redirectToCheckout({
+      lineItems: [{price: priceId, quantity: 1}],
+      mode: 'subscription',
+      /*
+       * Do not rely on the redirect to the successUrl for fulfilling
+       * purchases, customers may not always reach the success_url after
+       * a successful payment.
+       * Instead use one of the strategies described in
+       * https://stripe.com/docs/payments/checkout/fulfill-orders
+       */
+      successUrl: baseURL + '/thanks',
+      cancelUrl: baseURL + '/private',
+      /*
+       * Add a parameter to attach string the Cognito and Stripe. 
+       */
+      clientReferenceId: this.userSub
+    })
+    .then(function (result) {
+      if (result.error) {
+        /*
+         * If `redirectToCheckout` fails due to a browser or network
+         * error, display the localized error message to your customer.
+         */
+        var displayError = document.getElementById('error-message');
+        displayError.textContent = result.error.message;
+      }
+    });
+
   }
 }

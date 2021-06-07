@@ -27,7 +27,18 @@
         </form>
     </mat-card-content>
 
-    <p *ngIf="errorMessage | async">{{ errorMessage | async }}</p>
+    <mat-card-actions>
+        <div fxFlex></div>
+        <button mat-stroked-button color="primary" (click)="checkout()">
+          <div fxFlex></div>
+          <div *ngIf="!(busy | async)">Subscribe a plan</div>
+          <mat-spinner *ngIf="busy | async" [diameter]="35"></mat-spinner>
+          <div fxFlex></div>
+        </button>
+        <div fxFlex></div>
+    </mat-card-actions>
+
+      <p *ngIf="errorMessage | async">{{ errorMessage | async }}</p>
 
     <mat-card-content fxLayout="row">
         <div fxFlex></div>
