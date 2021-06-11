@@ -48,7 +48,6 @@ export class PrivateComponent implements OnInit {
         }
       });
       this.userDetails_.next(userDetails);
-
       const userGroups = await this.auth.getUserGroups();
       userGroups.forEach(group => {
         console.log(group);
@@ -62,8 +61,8 @@ export class PrivateComponent implements OnInit {
 
   public async checkout() {
     const baseURL = 'http://localhost:4200';
-    const apiKey = 'YOUR_API_KEY - https://dashboard.stripe.com/test/apikeys';
-    const priceId = 'YOUR_PRICE_ID - https://dashboard.stripe.com/test/products';
+    const apiKey = 'YOUR_API_KEY';
+    const priceId = 'YOUR_PRICE_ID';
 
     const stripe = await loadStripe(apiKey);
     stripe.redirectToCheckout({
@@ -76,7 +75,7 @@ export class PrivateComponent implements OnInit {
        * Instead use one of the strategies described in
        * https://stripe.com/docs/payments/checkout/fulfill-orders
        */
-      successUrl: baseURL + '/thanks',
+      successUrl: baseURL + '/private',
       cancelUrl: baseURL + '/private',
 
       /*
