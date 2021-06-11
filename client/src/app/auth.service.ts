@@ -74,8 +74,13 @@ export class AuthService {
   }
 
   public async getUserGroups() {
+<<<<<<< HEAD
     const user = await Auth.currentAuthenticatedUser({bypassCache: true});
     const groups = await user.getSignInUserSession().getAccessToken().payload["cognito:groups"];
+=======
+    this.cognitoUser = await Auth.currentAuthenticatedUser({bypassCache: true});
+    const groups = await this.cognitoUser.getSignInUserSession().getAccessToken().payload["cognito:groups"];
+>>>>>>> 4de47507683f56d6ed86818b9fc180ff02be5cca
     if (!groups) {
       return [];
     }
