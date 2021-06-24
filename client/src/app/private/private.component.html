@@ -38,6 +38,37 @@
         <div fxFlex></div>
     </mat-card-actions>
 
+    <mat-card-actions>
+      <div fxFlex></div>
+      <button mat-stroked-button color="primary" (click)="openCustomerPortal()">
+        <div fxFlex></div>
+        <div *ngIf="!(busy | async)">Open customer portal</div>
+        <mat-spinner *ngIf="busy | async" [diameter]="35"></mat-spinner>
+        <div fxFlex></div>
+      </button>
+      <div fxFlex></div>
+  </mat-card-actions>
+
+    <mat-card-content>
+        <form fxLayout="column">
+          <mat-form-field>
+            <input matInput placeholder="New E-mail" [formControl]="newEmail" type="email" email name="newEmail"
+              autocomplete="username email" />
+          </mat-form-field>
+        </form>
+      </mat-card-content>
+    
+      <mat-card-actions>
+        <div fxFlex></div>
+        <button mat-stroked-button color="primary" (click)="changeEmail()" [disabled]="(busy | async)">
+          <div fxFlex></div>
+          <div *ngIf="!(busy | async)">Change Email</div>
+          <mat-spinner *ngIf="busy | async" [diameter]="35"></mat-spinner>
+          <div fxFlex></div>
+        </button>
+        <div fxFlex></div>
+      </mat-card-actions>
+
       <p *ngIf="errorMessage | async">{{ errorMessage | async }}</p>
 
     <mat-card-content fxLayout="row">

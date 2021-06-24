@@ -3,7 +3,7 @@
 
 import { Injectable, Inject } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
-import { Auth } from 'aws-amplify';
+import { Auth, API } from 'aws-amplify';
 import { CognitoUser } from 'amazon-cognito-identity-js';
 
 @Injectable({
@@ -82,4 +82,18 @@ export class AuthService {
     return groups;
   }
 
+  public async getJwtToken() {
+    return (await Auth.currentSession()).getIdToken().getJwtToken();
+  }
+
+  public async changeEmail(newEmail, oldEmail) {
+    if (!this.cognitoUser) {
+      this.cognitoUser = await Auth.currentAuthenticatedUser();
+    }
+    const result = await Auth.updateUserAttributes(this.cognitoUser, {
+      email: newEmail,
+      'custom:validated_email': oldEmail
+    });
+    console.log(result);
+  }
 }

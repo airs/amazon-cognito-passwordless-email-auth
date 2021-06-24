@@ -6,6 +6,7 @@ import { AuthService } from '../auth.service';
 import { BehaviorSubject } from 'rxjs';
 import { FormGroup, FormControl } from '@angular/forms';
 import {loadStripe} from '@stripe/stripe-js';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -28,7 +29,10 @@ export class PrivateComponent implements OnInit {
 
   private userSub = null;
 
-  constructor(private auth: AuthService) { }
+  private email = null;
+  public newEmail = new FormControl('');
+
+  constructor(private router: Router, private auth: AuthService) { }
 
   ngOnInit() {
     this.getUserDetails();
@@ -45,6 +49,10 @@ export class PrivateComponent implements OnInit {
 
         if (detail.getName() === 'sub') {
           this.userSub = detail.getValue();
+        }
+
+        if (detail.getName() === 'email') {
+          this.email = detail.getValue();
         }
       });
       this.userDetails_.next(userDetails);
@@ -89,7 +97,12 @@ export class PrivateComponent implements OnInit {
       billingAddressCollection: 'required',
       shippingAddressCollection: {
         allowedCountries: ['JP'],
-      }
+      },
+
+      /*
+       * Autofill Email to Checkout Form.
+       */
+      customerEmail: this.email
     })
     .then(function (result) {
       if (result.error) {
@@ -101,5 +114,22 @@ export class PrivateComponent implements OnInit {
       }
     });
 
+  }
+
+  public async openCustomerPortal() {
+    const jwdToken = this.auth.getJwtToken();
+    console.log(jwdToken);
+  }
+
+  public async changeEmail() {
+    try {
+      await this.auth.changeEmail(this.newEmail.value, this.email);
+      this.router.navigate(['/enter-secret-code']);
+    } catch (err) {
+      this.errorMessage_.next(err.message || err);
+    } finally {
+      this.busy_.next(false);
+    }
+    console.log(this.email, this.newEmail.value);
   }
 }
