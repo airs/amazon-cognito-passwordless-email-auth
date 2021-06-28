@@ -5,8 +5,9 @@ import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { AuthService } from '../auth.service';
 import { BehaviorSubject } from 'rxjs';
 import { FormGroup, FormControl } from '@angular/forms';
-import {loadStripe} from '@stripe/stripe-js';
+import { loadStripe } from '@stripe/stripe-js';
 import { Router } from '@angular/router';
+import { environment } from 'src/environments/environment';
 
 
 @Component({
@@ -31,6 +32,8 @@ export class PrivateComponent implements OnInit {
 
   private email = null;
   public newEmail = new FormControl('');
+
+  public code = new FormControl('');
 
   constructor(private router: Router, private auth: AuthService) { }
 
@@ -69,8 +72,8 @@ export class PrivateComponent implements OnInit {
 
   public async checkout() {
     const baseURL = 'http://localhost:4200';
-    const apiKey = 'YOUR_API_KEY';
-    const priceId = 'YOUR_PRICE_ID';
+    const apiKey = environment.stripeApiKey;
+    const priceId = environment.stripePriceId;
 
     const stripe = await loadStripe(apiKey);
     stripe.redirectToCheckout({
@@ -124,12 +127,23 @@ export class PrivateComponent implements OnInit {
   public async changeEmail() {
     try {
       await this.auth.changeEmail(this.newEmail.value, this.email);
-      this.router.navigate(['/enter-secret-code']);
+      window.location.reload();
     } catch (err) {
       this.errorMessage_.next(err.message || err);
     } finally {
       this.busy_.next(false);
     }
-    console.log(this.email, this.newEmail.value);
+  }
+
+  public async verifyCode() {
+    console.log(this.email, this.code.value)
+    try {
+      await this.auth.verifyEmail(this.email, this.code.value);
+      window.location.reload();
+    } catch (err) {
+      this.errorMessage_.next(err.message || err);
+    } finally {
+      this.busy_.next(false);
+    }
   }
 }

@@ -94,6 +94,23 @@ export class AuthService {
       email: newEmail,
       'custom:validated_email': oldEmail
     });
-    console.log(result);
+
+    return result;
+  }
+
+  public async verifyEmail(email: string, code: string) {
+    if (!this.cognitoUser) {
+      this.cognitoUser = await Auth.currentAuthenticatedUser();
+    }
+    const result = await Auth.verifyUserAttributeSubmit(this.cognitoUser, 'email', code);
+    if (result === 'SUCCESS') {
+      const result2 = await Auth.updateUserAttributes(this.cognitoUser, {
+        email: email,
+        'custom:validated_email': email,
+      });
+      return result2;
+    } else {
+      return result;
+    }
   }
 }
