@@ -9,7 +9,6 @@ import { loadStripe } from '@stripe/stripe-js';
 import { Router } from '@angular/router';
 import { environment } from 'src/environments/environment';
 
-
 @Component({
   selector: 'app-private',
   templateUrl: './private.component.html',
@@ -120,8 +119,7 @@ export class PrivateComponent implements OnInit {
   }
 
   public async openCustomerPortal() {
-    const jwdToken = this.auth.getJwtToken();
-    console.log(jwdToken);
+    this.auth.openCustomerPortral();
   }
 
   public async changeEmail() {

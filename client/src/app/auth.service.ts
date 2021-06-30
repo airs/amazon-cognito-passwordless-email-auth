@@ -5,6 +5,7 @@ import { Injectable, Inject } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { Auth, API } from 'aws-amplify';
 import { CognitoUser } from 'amazon-cognito-identity-js';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -84,8 +85,29 @@ export class AuthService {
     return groups;
   }
 
-  public async getJwtToken() {
-    return (await Auth.currentSession()).getIdToken().getJwtToken();
+  public async openCustomerPortral() {
+    const requestUrl = environment.apiBaseUrl + '/stripe/customer_portal'
+    const returnUrl = 'http://localhost:4200/private'
+    const jwtToken = (await Auth.currentSession()).getIdToken().getJwtToken();
+
+    const response = fetch(requestUrl, {
+      method: 'POST',
+      mode: 'cors',
+      referrerPolicy: 'unsafe-url',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': jwtToken
+      },
+      body: JSON.stringify({
+        returnUrl: returnUrl
+      })
+    })
+    .then(response => {
+      response.json().then(data => {
+        window.location = data.url;
+      })
+    })
+    .catch(error => console.error(error))
   }
 
   public async changeEmail(newEmail, oldEmail) {
